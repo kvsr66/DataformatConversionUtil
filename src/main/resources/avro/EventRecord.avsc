@@ -1,0 +1,71 @@
+{
+	"namespace": "io.keyko.monitoring.schemas",
+	"type": "record",
+	"name": "EventRecord",
+	"fields": [{
+			"name": "id",
+			"type": "string"
+		},
+		{
+			"name": "name",
+			"type": "string"
+		},
+		{
+			"name": "contractName",
+			"type": "string",
+			"default": ""
+		},
+		{
+			"name": "filterId",
+			"type": "string"
+		},
+		{
+			"name": "nodeName",
+			"type": "string"
+		},
+
+		{
+			"name": "transactionHash",
+			"type": "string"
+		},
+		{
+			"name": "logIndex",
+			"type": "string",
+			"java-class": "java.math.BigInteger"
+		},
+		{
+			"name": "blockNumber",
+			"type": "long"
+		},
+		{
+			"name": "blockHash",
+			"type": "string"
+		},
+		{
+			"name": "address",
+			"type": "string"
+		},
+		{
+			"name": "status",
+			"type": {
+				"name": "ContractEventStatus",
+				"type": "enum",
+				"symbols": [
+					"UNCONFIRMED", "CONFIRMED", "INVALIDATED"
+				]
+			}
+		},
+		{
+			"name": "eventSpecificationSignature",
+			"type": "string"
+		},
+		{
+			"name": "networkName",
+			"type": "string"
+		},
+		{
+			"name": "retries",
+			"type": "int"
+		}
+	]
+}
