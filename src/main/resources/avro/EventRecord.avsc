@@ -2,6 +2,7 @@
 	"namespace": "io.keyko.monitoring.schemas",
 	"type": "record",
 	"name": "EventRecord",
+	"alias" : "Event",
 	"fields": [{
 			"name": "id",
 			"type": "string"

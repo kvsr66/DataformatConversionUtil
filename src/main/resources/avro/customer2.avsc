@@ -1,0 +1,75 @@
+ {
+    "type": "record",
+    "namespace": "com.company.model",
+    "name": "AddressRecord",
+    "fields": [
+      {
+        "name": "streetaddress",
+        "type": "string"
+      },
+      {
+        "name": "city",
+        "type": "string"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "zip",
+        "type": "string"
+      }
+    ]
+  }
+  {
+    "namespace": "com.company.model",
+    "type": "record",
+    "name": "Customer",
+    "fields": [
+      {
+        "name": "firstname",
+        "type": "string"
+      },
+      {
+        "name": "lastname",
+        "type": "string"
+      },
+      {
+        "name": "email",
+        "type": "string"
+      },
+      {
+        "name": "phone",
+        "type": "string"
+      },
+      {
+        "name": "address",
+        "type": {
+          "type": "array",
+          "items": "com.company.model.AddressRecord"
+        }
+      }
+    ]
+  }
+  {
+    "namespace": "com.company.model",
+    "type": "record",
+    "name": "Customer2",
+    "fields": [
+      {
+        "name": "x",
+        "type": "string"
+      },
+      {
+        "name": "y",
+        "type": "string"
+      },
+      {
+        "name": "address",
+        "type": {
+          "type": "array",
+          "items": "com.company.model.AddressRecord"
+        }
+      }
+    ]
+  }

@@ -1,0 +1,120 @@
+{
+  "name": "TransactionRecord",
+  "namespace": "com.data.util.avro",
+  "type": "record",
+  "fields": [
+  {
+   "name": "transactionData",
+   "type": {
+     "fields": [
+       {
+          "default": null,
+          "name": "TXN_ID",
+          "type": [
+                "null",
+                "long"
+          ]
+       },
+       {
+          "default": null,
+          "name": "TXN_TYPE_CD",
+          "type": [
+                    "null",
+                    "string"
+          ]
+       },
+       {
+          "default" : null,
+          "name" : "QTY_CHG",
+          "type": [
+              "null",
+              {
+                "logicalType": "decimal",
+                "precision": 18,
+                "scale": 4,
+                "type": "bytes"
+              }
+          ]
+       },
+       {
+          "default" : null,
+          "name" : "ACC_INT_QTY_CHG",
+          "type": [
+              "null",
+               {
+                 "logicalType": "decimal",
+                 "precision": 18,
+                 "scale": 4,
+                 "type": "bytes"
+               }
+           ]
+       },
+       {
+          "default" : null,
+          "name" : "UNIT-COST_CHG",
+          "type": [
+              "null",
+               {
+                 "logicalType": "decimal",
+                 "precision": 38,
+                 "scale": 15,
+                 "type": "bytes"
+               }
+           ]
+       }
+     ]
+   }
+  },
+  {
+    "name": "transactionHeader",
+    "type": {
+        "fields": [
+           {
+              "name": "operation",
+              "type": {
+                   "symbols": [
+                        "INSERT",
+                        "UPDATE",
+                        "DELETE",
+                        "REFRESH"
+                       ],
+                   "type": "enum"
+			    }
+             },
+            {
+               "default": null,
+               "name": "TXN_TYPE_CD",
+               "type": [
+                  "null",
+                  "string"
+               ]
+            },
+            {
+              "default": null,
+              "name": "ACCT_CD",
+              "type": [
+                   "null",
+                   "string"
+                ]
+            },
+            {
+              "default": null,
+              "name": "QTY_CHG",
+              "type": [
+                 "null",
+                  {
+                    "logicalType": "decimal",
+                    "precision" : 29,
+                    "scale": 6,
+                    "type": "bytes"
+                  }
+                 ]
+            }
+
+        ]
+
+           }
+
+     }
+ ]
+}
