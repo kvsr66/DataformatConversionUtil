@@ -10,8 +10,8 @@ import java.util.List;
 public class AvroToCsvConverterNew {
 
     public static void main(String[] args) throws IOException {
-        String schemaDir = "\\src\\main\\resources\\avro\\";
-        String avroSchemaFile = schemaDir + "EventRecord.avsc";
+        String schemaDir = "src\\main\\resources\\avro\\";
+        String avroSchemaFile = schemaDir + "schemafile1.avsc";
         AvroToCsvConverterNew converter = new AvroToCsvConverterNew();
         converter.convertAvroSchemaToMetaDataCSV(avroSchemaFile);
 
@@ -20,22 +20,19 @@ public class AvroToCsvConverterNew {
     public void convertAvroSchemaToMetaDataCSV(String avroFilePath) throws IOException {
 
         String basePath = "\\src\\main\\resources\\avro\\";
+
         String entitySchemaFile = basePath + "Entity.csv";
         String fieldSchemaFile = basePath + "Fields.csv";
 
-        Schema avroSchema = AvroSchemaBuilderUtility.readAvroSchemaFromSchemaFile(avroFilePath);
+        Schema avroSchema = AvroConverter.readAvroSchemaFromSchemaFile(avroFilePath);
 
         generateMetadata(avroSchema, entitySchemaFile, fieldSchemaFile);
 
     }
 
-    public void generateMetadata(Schema avroSchema, String entityFilePath, String fieldsFilePath) throws IOException {
-
-        StringBuilder entityBuilder = createEntityHeader();
-        StringBuilder fieldBuilder = createFieldsHeader();
+    public void processMetaData(Schema avroSchema, Schema.Field field, StringBuilder entityBuilder, StringBuilder fieldBuilder){
 
         int entityId = 1;
-
         if (null != avroSchema) {
             entityBuilder.append(buildEntityMetaData(avroSchema, null, entityId));
 
@@ -49,10 +46,19 @@ public class AvroToCsvConverterNew {
                     if (Schema.Type.RECORD == locaField.schema().getType()) {
                         entityBuilder.append(buildEntityMetaData(locaField.schema(), null, entityId));
                         entityId++;
+
+                        processMetaData(locaField.schema(), null, entityBuilder, fieldBuilder);
                     }
                 }
             }
         }
+    }
+    public void generateMetadata(Schema avroSchema, String entityFilePath, String fieldsFilePath) throws IOException {
+
+        StringBuilder entityBuilder = createEntityHeader();
+        StringBuilder fieldBuilder = createFieldsHeader();
+
+        processMetaData(avroSchema, null, entityBuilder, fieldBuilder);
 
         writeToFile(entityBuilder.toString(), entityFilePath);
 
@@ -71,7 +77,7 @@ public class AvroToCsvConverterNew {
             entityDataBuilder.append("PK").append(",");//primary_key
             entityDataBuilder.append(schema.getNamespace()).append(","); //object_type
             entityDataBuilder.append(schema.getName()).append(","); // object_name
-            entityDataBuilder.append(schema.getNamespace()).append(schema.getName()).append(","); // package_name
+            entityDataBuilder.append(schema.getNamespace()).append(".").append(schema.getName()).append(","); // package_name
             entityDataBuilder.append("\n");
         } else if (null != field) {
             entityDataBuilder.append(entityId + 1).append(",");
@@ -151,8 +157,6 @@ public class AvroToCsvConverterNew {
         FileOutputStream out = new FileOutputStream(filePath);
         out.write(data.getBytes());
         out.close();
-
-
     }
 
 }
