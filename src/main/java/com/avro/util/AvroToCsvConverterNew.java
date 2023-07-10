@@ -10,7 +10,7 @@ import java.util.List;
 public class AvroToCsvConverterNew {
 
     public static void main(String[] args) throws IOException {
-        String schemaDir = "src\\main\\resources\\avro\\";
+        String schemaDir = "\\src\\main\\resources\\avro\\";
         String avroSchemaFile = schemaDir + "schemafile1.avsc";
         AvroToCsvConverterNew converter = new AvroToCsvConverterNew();
         converter.convertAvroSchemaToMetaDataCSV(avroSchemaFile);
@@ -18,8 +18,7 @@ public class AvroToCsvConverterNew {
     }
 
     public void convertAvroSchemaToMetaDataCSV(String avroFilePath) throws IOException {
-
-        String basePath = "\\src\\main\\resources\\avro\\";
+        String basePath = "s\\src\\main\\resources\\avro\\";
 
         String entitySchemaFile = basePath + "Entity.csv";
         String fieldSchemaFile = basePath + "Fields.csv";
@@ -44,10 +43,10 @@ public class AvroToCsvConverterNew {
                     fieldBuilder.append(buildFieldsMetaData(null, locaField, entityId, fieldId));
                     fieldId++;
                     if (Schema.Type.RECORD == locaField.schema().getType()) {
-                        entityBuilder.append(buildEntityMetaData(locaField.schema(), null, entityId));
+                        processMetaData(locaField.schema(), null, entityBuilder, fieldBuilder);
                         entityId++;
 
-                        processMetaData(locaField.schema(), null, entityBuilder, fieldBuilder);
+
                     }
                 }
             }
