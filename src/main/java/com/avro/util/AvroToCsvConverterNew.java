@@ -1,5 +1,6 @@
 package com.avro.util;
 
+import org.apache.avro.JsonProperties;
 import org.apache.avro.Schema;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -19,7 +20,6 @@ public class AvroToCsvConverterNew {
 
     public void convertAvroSchemaToMetaDataCSV(String avroFilePath) throws IOException {
         String basePath = "s\\src\\main\\resources\\avro\\";
-
         String entitySchemaFile = basePath + "Entity.csv";
         String fieldSchemaFile = basePath + "Fields.csv";
 
@@ -29,35 +29,30 @@ public class AvroToCsvConverterNew {
 
     }
 
-    public void processMetaData(Schema avroSchema, Schema.Field field, StringBuilder entityBuilder, StringBuilder fieldBuilder){
+    public void processMetaData(Schema avroSchema, Schema.Field field, StringBuilder entityBuilder, StringBuilder fieldBuilder, int entityId, int fieldId) {
 
-        int entityId = 1;
         if (null != avroSchema) {
-            entityBuilder.append(buildEntityMetaData(avroSchema, null, entityId));
+            entityBuilder.append(buildEntityMetaData(avroSchema, null, ++entityId));
 
             List<Schema.Field> fields = avroSchema.getFields();
 
             if (CollectionUtils.isNotEmpty(fields)) {
                 for (Schema.Field locaField : fields) {
-                    int fieldId = 1;
-                    fieldBuilder.append(buildFieldsMetaData(null, locaField, entityId, fieldId));
-                    fieldId++;
+                    fieldBuilder.append(buildFieldsMetaData(null, locaField, entityId, ++fieldId));
                     if (Schema.Type.RECORD == locaField.schema().getType()) {
-                        processMetaData(locaField.schema(), null, entityBuilder, fieldBuilder);
-                        entityId++;
-
-
+                        processMetaData(locaField.schema(), null, entityBuilder, fieldBuilder, entityId, fieldId);
                     }
                 }
             }
         }
     }
+
     public void generateMetadata(Schema avroSchema, String entityFilePath, String fieldsFilePath) throws IOException {
 
         StringBuilder entityBuilder = createEntityHeader();
         StringBuilder fieldBuilder = createFieldsHeader();
 
-        processMetaData(avroSchema, null, entityBuilder, fieldBuilder);
+        processMetaData(avroSchema, null, entityBuilder, fieldBuilder, 0, 0);
 
         writeToFile(entityBuilder.toString(), entityFilePath);
 
@@ -79,7 +74,7 @@ public class AvroToCsvConverterNew {
             entityDataBuilder.append(schema.getNamespace()).append(".").append(schema.getName()).append(","); // package_name
             entityDataBuilder.append("\n");
         } else if (null != field) {
-            entityDataBuilder.append(entityId + 1).append(",");
+            entityDataBuilder.append(entityId).append(",");
             entityDataBuilder.append(field.name()).append(",");
             entityDataBuilder.append(field.getObjectProp("alias")).append(",");
             entityDataBuilder.append(field.doc()).append(","); //description
@@ -95,17 +90,17 @@ public class AvroToCsvConverterNew {
 
         StringBuilder fieldDataBuilder = new StringBuilder();
         fieldDataBuilder.append(entityId).append(","); // entity_id
-        fieldDataBuilder.append(fieldId + 1).append(","); //"field_no,");
+        fieldDataBuilder.append(fieldId).append(","); //"field_no,");
         fieldDataBuilder.append(field.name()).append(","); //field_name
         fieldDataBuilder.append(field.getObjectProps().containsValue("null") ? "Y" : "N").append(","); //is_nullable
         fieldDataBuilder.append("array".equalsIgnoreCase(field.schema().getType().getName()) ? "Y" : "N").append(","); //("is_repeated,");
         fieldDataBuilder.append("enum".equalsIgnoreCase(field.schema().getType().getName()) ? "Y" : "N").append(",");//"is_enum");
         fieldDataBuilder.append("==").append(",");// "code_type"
-        fieldDataBuilder.append(null != field.getObjectProp("size") ? field.getObjectProp("size") : "==").append(",");//data_length
-        fieldDataBuilder.append(null != field.getObjectProp("precision") ? field.getObjectProp("precision") : "==").append(",");//data_precision
-        fieldDataBuilder.append(null != field.getObjectProp("scale") ? field.getObjectProp("scale") : "==").append(",");//data_scale
-        fieldDataBuilder.append(null != field.getObjectProp("default") ? field.getObjectProp("default") : "==").append(",");//defaut_value
-        fieldDataBuilder.append(field.schema().getType().getName()).append(","); //"data_type,");
+        fieldDataBuilder.append(getValue(field, "size")).append(",");//data_length
+        fieldDataBuilder.append(getValue(field, "precision")).append(",");//data_precision
+        fieldDataBuilder.append(getValue(field, "scale")).append(",");//data_scale
+        fieldDataBuilder.append(getDefaultValue(field)).append(",");//default_value
+        fieldDataBuilder.append(getDataType(field)).append(","); //"data_type,");
         fieldDataBuilder.append("\n");
 
         return fieldDataBuilder;
@@ -156,6 +151,37 @@ public class AvroToCsvConverterNew {
         FileOutputStream out = new FileOutputStream(filePath);
         out.write(data.getBytes());
         out.close();
+    }
+
+    public static String getDataType(Schema.Field field) {
+
+        if (Schema.Type.UNION == field.schema().getType()) {
+            if (Schema.Type.BYTES == field.schema().getTypes().get(1).getType()) {
+                return field.schema().getTypes().get(1).getLogicalType().getName();
+            } else {
+                return field.schema().getTypes().get(1).getType().getName();
+            }
+        } else {
+            return field.schema().getType().getName();
+        }
+    }
+
+public static Object getDefaultValue(Schema.Field field){
+
+        if(field.defaultVal() instanceof JsonProperties.Null){
+            return null;
+       }
+
+        return field.defaultVal();
+}
+    public static String getValue(Schema.Field field, String property) {
+
+        if (Schema.Type.UNION == field.schema().getType()) {
+            if (Schema.Type.BYTES == field.schema().getTypes().get(1).getType()) {
+                return field.schema().getTypes().get(1).getProp(property);
+            }
+        }
+        return "";
     }
 
 }
