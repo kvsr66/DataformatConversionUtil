@@ -1,6 +1,7 @@
 package com.avro.util;
 
 import org.apache.avro.JsonProperties;
+import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -11,7 +12,8 @@ import java.util.List;
 public class AvroToCsvConverterNew {
 
     public static void main(String[] args) throws IOException {
-        String schemaDir = "\\src\\main\\resources\\avro\\";
+        String schemaDir = "D:\\subbu\\workspaces\\intellij-workspace\\DataFormatUtilityProject\\src\\main\\resources\\avro\\";
+        //String schemaDir = "\\src\\main\\resources\\avro\\";
         String avroSchemaFile = schemaDir + "schemafile1.avsc";
         AvroToCsvConverterNew converter = new AvroToCsvConverterNew();
         converter.convertAvroSchemaToMetaDataCSV(avroSchemaFile);
@@ -19,7 +21,9 @@ public class AvroToCsvConverterNew {
     }
 
     public void convertAvroSchemaToMetaDataCSV(String avroFilePath) throws IOException {
-        String basePath = "s\\src\\main\\resources\\avro\\";
+        // String basePath = "s\\src\\main\\resources\\avro\\";
+        String basePath = "D:\\subbu\\workspaces\\intellij-workspace\\DataFormatUtilityProject\\src\\main\\resources\\avro\\";
+
         String entitySchemaFile = basePath + "Entity.csv";
         String fieldSchemaFile = basePath + "Fields.csv";
 
@@ -156,10 +160,16 @@ public class AvroToCsvConverterNew {
     public static String getDataType(Schema.Field field) {
 
         if (Schema.Type.UNION == field.schema().getType()) {
-            if (Schema.Type.BYTES == field.schema().getTypes().get(1).getType()) {
-                return field.schema().getTypes().get(1).getLogicalType().getName();
+            Schema subSchema = field.schema().getTypes().get(1);
+            if (Schema.Type.BYTES == subSchema.getType()) {
+                LogicalType lt = subSchema.getLogicalType();
+                if(null!= lt) {
+                    return lt.getName();
+                }else{
+                    return subSchema.getType().getName();
+                }
             } else {
-                return field.schema().getTypes().get(1).getType().getName();
+                return subSchema.getType().getName();
             }
         } else {
             return field.schema().getType().getName();
