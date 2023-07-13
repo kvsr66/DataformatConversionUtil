@@ -12,8 +12,7 @@ import java.util.List;
 public class AvroToCsvConverterNew {
 
     public static void main(String[] args) throws IOException {
-        String schemaDir = "D:\\subbu\\workspaces\\intellij-workspace\\DataFormatUtilityProject\\src\\main\\resources\\avro\\";
-        //String schemaDir = "\\src\\main\\resources\\avro\\";
+        String schemaDir = "\\src\\main\\resources\\avro\\";
         String avroSchemaFile = schemaDir + "schemafile1.avsc";
         AvroToCsvConverterNew converter = new AvroToCsvConverterNew();
         converter.convertAvroSchemaToMetaDataCSV(avroSchemaFile);
@@ -21,8 +20,7 @@ public class AvroToCsvConverterNew {
     }
 
     public void convertAvroSchemaToMetaDataCSV(String avroFilePath) throws IOException {
-        // String basePath = "s\\src\\main\\resources\\avro\\";
-        String basePath = "D:\\subbu\\workspaces\\intellij-workspace\\DataFormatUtilityProject\\src\\main\\resources\\avro\\";
+        String basePath = "\\src\\main\\resources\\avro\\";
 
         String entitySchemaFile = basePath + "Entity.csv";
         String fieldSchemaFile = basePath + "Fields.csv";
@@ -188,7 +186,7 @@ public static Object getDefaultValue(Schema.Field field){
 
         if (Schema.Type.UNION == field.schema().getType()) {
             if (Schema.Type.BYTES == field.schema().getTypes().get(1).getType()) {
-                return field.schema().getTypes().get(1).getProp(property);
+                return String.valueOf(field.schema().getTypes().get(1).getJsonProp(property));
             }
         }
         return "";
